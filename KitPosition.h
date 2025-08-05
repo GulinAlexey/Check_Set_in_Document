@@ -7,7 +7,7 @@ using namespace std;
 class KitPosition
 {
 private:
-	string catalog; // Каталог
+	string catalog; // Наименование каталога
 	int qty; // Кол-во
 public:
 	KitPosition(string catalog, int qty);

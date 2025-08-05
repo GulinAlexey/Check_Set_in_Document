@@ -19,9 +19,9 @@ void TextChecker::getPositionsFromDoc(string filename)
 		istringstream istr(fstr); // создать поток из строки для получения подстрок в строке
 
 		// Заполняемые поля для новой позиции
-		int num = 0;
+		int num = -1;
 		string name = "";
-		int qty = 0;
+		int qty = -1;
 		vector<string> catalogs;
 
 		for (int j = 0; !istr.eof(); j++) // пока не будет пройдена вся строка
@@ -36,8 +36,11 @@ void TextChecker::getPositionsFromDoc(string filename)
 				case 0: // Номер по порядку
 					// если первым элементом строки является не число (порядковый номер), то пропустить её
 					// (например, это шапка таблицы)
-					if (!onlyNumInStrCheck(substr.c_str())) 
+					if (!onlyNumInStrCheck(substr.c_str()))
+					{
 						skipLine = true;
+						break;
+					}
 					num = atoi(substr.c_str());
 					break;
 				case 1: // Наименование
@@ -54,6 +57,7 @@ void TextChecker::getPositionsFromDoc(string filename)
 					qty = atoi(substr.c_str());
 					break;
 				default: // Один из каталогов
+					// Пропустить побочные слова в строке
 					if(substr == "шт" || substr == "шт.")
 						break;
 					newCatalog = substr;
@@ -82,7 +86,51 @@ void TextChecker::getPositionsFromKit(string filename)
 		cout << "Во входном файле \"" << filename << "\" отсутствуют данные." << endl;
 		exit(1);
 	}
-	// TODO
+	ifstream finp; // указатель на файл для чтения
+	finp.open(filename); // открыть файл для чтения
+	string fstr; // строка для чтения из файла
+	for (int i = 0; i < n; i++) // чтение строк из файла
+	{
+		string substr; // подстрока для чтения из строки
+		bool skipLine = false; // флаг для пропуска строки
+		getline(finp, fstr, '\n'); // получить строку из файла
+		istringstream istr(fstr); // создать поток из строки для получения подстрок в строке
+
+		// Заполняемые поля для новой позиции
+		string catalog = "";
+		int qty = -1;
+
+		for (int j = 0; !istr.eof(); j++) // пока не будет пройдена вся строка
+		{
+			string newCatalog;
+
+			istr >> substr; // прочитать подстроку из строки
+			if (substr != "" && substr != " ") // если подстрока прочитана корректно
+			{
+				if (j == 0) // Наименование каталога
+				{
+					// пропустить строку, являющуюся шапкой таблицы
+					if (substr == "Каталог" || substr == "каталог")
+					{
+						skipLine = true;
+						break;
+					}
+					catalog = substr;
+				}
+				else // Кол-во
+				{
+					// Пропустить побочные слова в строке
+					if (substr != "-" && substr != "--" && substr != "---")
+					{
+						qty = atoi(substr.c_str());
+						break;
+					}
+				}
+			}
+		}
+		if (!skipLine)
+			kitPositions.push_back(KitPosition(catalog, qty));
+	}
 }
 
 void TextChecker::checkKitInDoc()
