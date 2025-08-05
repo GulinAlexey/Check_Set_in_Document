@@ -11,6 +11,10 @@ using namespace std;
 int main()
 {
 	setlocale(LC_ALL, "Rus"); // для корректного отображения русских букв
-	
+	TextChecker* checker = new TextChecker();
+	checker->getPositionsFromDoc(DOC_FILENAME);
+	checker->getPositionsFromKit(KIT_FILENAME);
+	checker->checkKitInDoc();
+	delete checker;
 	return 0;
 }
