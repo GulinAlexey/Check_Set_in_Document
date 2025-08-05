@@ -12,7 +12,7 @@ endif()
 project ("Check_Set_in_Document")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (Check_Set_in_Document "Check_Set_in_Document.cpp" "Check_Set_in_Document.h")
+add_executable (Check_Set_in_Document "Check_Set_in_Document.cpp" "Check_Set_in_Document.h" "TextChecker.h" "TextChecker.cpp" "DocPosition.h" "DocPosition.cpp" "KitPosition.cpp" "KitPosition.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Check_Set_in_Document PROPERTY CXX_STANDARD 20)

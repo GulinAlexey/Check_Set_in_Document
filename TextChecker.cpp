@@ -1,0 +1,1 @@
+﻿#include "TextChecker.h"
