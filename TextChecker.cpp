@@ -1,6 +1,6 @@
 ﻿#include "TextChecker.h"
 
-void TextChecker::getPositionsFromDoc(string filename)
+void TextChecker::getPositionsFromDoc(string filename) // Считать позиции документа из файла
 {
 	int n = countStringsInInputFile(filename); // получение кол-ва строк таблицы в файле
 	if (n == 0)
@@ -74,11 +74,11 @@ void TextChecker::getPositionsFromDoc(string filename)
 			}
 		}
 		if (!skipLine)
-			docPositions.push_back(DocPosition(num, name, qty, catalogs));
+			this->docPositions.push_back(DocPosition(num, name, qty, catalogs));
 	}
 }
 
-void TextChecker::getPositionsFromKit(string filename)
+void TextChecker::getPositionsFromKit(string filename) // Считать позиции набора из файла
 {
 	int n = countStringsInInputFile(filename); //получение кол-ва строк таблицы в файле
 	if (n == 0)
@@ -129,13 +129,55 @@ void TextChecker::getPositionsFromKit(string filename)
 			}
 		}
 		if (!skipLine)
-			kitPositions.push_back(KitPosition(catalog, qty));
+			this->kitPositions.push_back(KitPosition(catalog, qty));
 	}
 }
 
-void TextChecker::checkKitInDoc()
+bool TextChecker::checkKitInDoc() // Проверить наличие набора в документе
 {
-
+	bool isKitInDoc = true;
+	vector <DocPosition> docPositionsWithKit; // Результирующий список позиций в документе, соответствующий набору
+	// Искать соответствия для каждой позиции в наборе
+	for (int i = 0; i < this->kitPositions.size(); i++)
+	{
+		string catalogName = this->kitPositions[i].getCatalog();
+		int catalogQty = this->kitPositions[i].getQty(); // Оставшееся кол-во для данного каталога, которое нужно найти в документе
+		bool isCatalogInDoc = false;
+		// Искать соответствия для набора в каждой позиции документа
+		for (int j = 0; j < this->docPositions.size(); j++)
+		{
+			vector<string> catalogsInDocPosition = this->docPositions[j].getCatalogs();
+			// Искать соответствия для набора в списке каталогов позиции документа
+			for (int k = 0; k < catalogsInDocPosition.size(); k++) 
+			{
+				if (catalogsInDocPosition[k] == catalogName) 
+				{
+					// Уменьшить оставшееся кол-во, которое нужно найти
+					catalogQty -= this->docPositions[j].getQty();
+					isCatalogInDoc = true;
+					docPositionsWithKit.push_back(this->docPositions[j]);
+					break;
+				}
+			}
+			if (catalogQty <= 0) // Уже найдено достаточно позиций документа для позиции набора
+				break;
+		}
+		// Если каталог не найден или количество недостаточное
+		if (!isCatalogInDoc || catalogQty > 0)
+		{
+			isKitInDoc = false;
+			break;
+		}
+	}
+	if (!isKitInDoc)
+		cout << "Набор не содержится в документе." << endl;
+	else
+	{
+		cout << "Набор содержится в документе." << endl;
+		cout << "Состав набора:" << endl;
+		printDocPositions(&docPositionsWithKit);
+	}
+	return isKitInDoc;
 }
 
 int TextChecker::countStringsInInputFile(string inputFileName) // Получение кол-ва строк таблицы в файле
@@ -167,4 +209,24 @@ bool TextChecker::onlyNumInStrCheck(const char* str) // Проверка, что
 			return false;
 	}
 	return true;
+}
+
+void TextChecker::printDocPositions(vector <DocPosition> *positions) // Вывести на экран позиции документа
+{
+	cout << left << setw(CELL_SIZE) << "Позиция" << setw(CELL_SIZE*2) << "Наименование" << setw(CELL_SIZE) << "Кол-во" << "Каталоги" << endl;
+	for (int i=0; i<positions->size(); i++)
+	{
+		cout << left << setw(CELL_SIZE) << (*positions)[i].getNum();
+		cout << left << setw(CELL_SIZE*2) << (*positions)[i].getName();
+		cout << left << (*positions)[i].getQty() << setw(CELL_SIZE-1) << " шт.";
+		vector<string> catalogs = (*positions)[i].getCatalogs();
+		cout << "(";
+		for (int j = 0; j < catalogs.size(); j++)
+		{
+			cout << catalogs[j];
+			if (j != catalogs.size() - 1)
+				cout << ", ";
+		}
+		cout << ")" << endl;
+	}
 }
