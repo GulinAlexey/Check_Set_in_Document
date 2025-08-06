@@ -137,6 +137,7 @@ bool TextChecker::checkKitInDoc() // Проверить наличие набо�
 {
 	bool isKitInDoc = true;
 	vector <DocPosition> docPositionsWithKit; // Результирующий список позиций в документе, соответствующий набору
+	vector<bool> usedPositions(docPositions.size(), false); // Использованные позиции
 	// Искать соответствия для каждой позиции в наборе
 	for (int i = 0; i < this->kitPositions.size(); i++)
 	{
@@ -146,6 +147,8 @@ bool TextChecker::checkKitInDoc() // Проверить наличие набо�
 		// Искать соответствия для набора в каждой позиции документа
 		for (int j = 0; j < this->docPositions.size(); j++)
 		{
+			if (usedPositions[j]) // Пропустить уже использованные позиции
+				continue;
 			vector<string> catalogsInDocPosition = this->docPositions[j].getCatalogs();
 			// Искать соответствия для набора в списке каталогов позиции документа
 			for (int k = 0; k < catalogsInDocPosition.size(); k++) 
@@ -156,6 +159,7 @@ bool TextChecker::checkKitInDoc() // Проверить наличие набо�
 					catalogQty -= this->docPositions[j].getQty();
 					isCatalogInDoc = true;
 					docPositionsWithKit.push_back(this->docPositions[j]);
+					usedPositions[j] = true; // Пометить позицию как использованную
 					break;
 				}
 			}
