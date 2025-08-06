@@ -1,4 +1,4 @@
-﻿#include "DocPosition.h"
+#include "DocPosition.h"
 
 DocPosition::DocPosition(int num, string name, int qty, vector<string> catalogs)
 {

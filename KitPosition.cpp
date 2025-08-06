@@ -1,4 +1,4 @@
-﻿#include "KitPosition.h"
+#include "KitPosition.h"
 
 KitPosition::KitPosition(string catalog, int qty)
 {

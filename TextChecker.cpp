@@ -1,4 +1,4 @@
-﻿#include "TextChecker.h"
+#include "TextChecker.h"
 
 void TextChecker::getPositionsFromDoc(string filename) // Считать позиции документа из файла
 {

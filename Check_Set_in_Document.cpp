@@ -1,4 +1,4 @@
-﻿// Check_Set_in_Document.cpp: определяет точку входа для приложения.
+// Check_Set_in_Document.cpp: определяет точку входа для приложения.
 //
 
 #include "Check_Set_in_Document.h"
@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-	setlocale(LC_ALL, "Rus"); // для корректного отображения русских букв
+	setlocale(LC_ALL, "en_US.UTF-8"); // для корректного отображения русских букв
 	TextChecker* checker = new TextChecker();
 	checker->getPositionsFromDoc(DOC_FILENAME);
 	checker->getPositionsFromKit(KIT_FILENAME);
